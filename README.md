@@ -6,7 +6,17 @@
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-Based on ideas from [challenges-optimizing-unspent-output-selection (BitGo)](https://blog.bitgo.com/challenges-optimizing-unspent-output-selection/)
+Based on ideas from [challenges optimizing unspent output selection (BitGo)](https://blog.bitgo.com/challenges-optimizing-unspent-output-selection/)
+
+Selection algorithm:
+
+1. Check that total *UTXOs* value is enough, if not return `null`.
+2. Do we have 1 *UTXO* with `target + fee <= value < target + fee + minChange`? If so, return this *UTXO*.
+3. Group *UTXOs* by `address`. With every group:
+  1. Continue if total value of group is not enough.
+  2. Sort by `value`.
+  3. Select first `UTXOs` that give enough value and return them.
+5. Select first `UTXOs` that give enough value and return them.
 
 ## API
 

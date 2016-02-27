@@ -22,6 +22,8 @@
     "url": "https://github.com/exodusmovement/utxo-selection.git"
   },
   "scripts": {
+    "prepublish": "npm run clean && npm run build",
+    "clean": "rm -rf lib",
     "build": "rm -rf lib && babel -D src -d lib",
     "lint": "standard",
     "test": "npm run lint && npm run unit",
