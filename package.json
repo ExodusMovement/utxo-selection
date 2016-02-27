@@ -25,13 +25,12 @@
     "build": "rm -rf lib && babel -D src -d lib",
     "lint": "standard",
     "test": "npm run lint && npm run unit",
-    "unit": "nyc ava"
+    "unit": "nyc --require babel-core/register --require babel-polyfill tap test/**/*.js"
   },
   "dependencies": {
     "lodash": "^4.5.1"
   },
   "devDependencies": {
-    "ava": "^0.12.0",
     "babel-cli": "^6.5.1",
     "babel-eslint": "^5.0.0",
     "babel-plugin-add-module-exports": "^0.1.2",
@@ -41,14 +40,10 @@
     "babel-preset-es2015": "^6.5.0",
     "babel-runtime": "^6.5.0",
     "nyc": "^5.6.0",
-    "standard": "^6.0.7"
+    "standard": "^6.0.7",
+    "tap": "^5.7.0"
   },
   "private": true,
-  "ava": {
-    "require": [
-      "babel-core/register"
-    ]
-  },
   "standard": {
     "parser": "babel-eslint",
     "ignore": [

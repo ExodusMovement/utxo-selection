@@ -16,7 +16,7 @@ export let select = function (utxos, feeEstimator, target) {
   // simple, but not optimized selection
   let result = { utxos: [], value: 0 }
   for (let utxo of sortBy(utxos, 'value')) {
-    result.push(utxo)
+    result.utxos.push(utxo)
     result.value += utxo.value
     if (result.value - feeEstimator(result.utxo) >= target) return result
   }
@@ -29,14 +29,15 @@ export default function utxoSelection (utxos, target, options) {
   let feeEstimator = getFeeEstimator(options)
 
   // check that total sum is enough
-  let total = utxos.reduce((t, utxo) => t + utxo.value, 0) - feeEstimator(utxos)
+  let total = sumBy(utxos, 'value') - feeEstimator(utxos)
   if (total < target) return null
   if (total < target + minChange) return utxos
 
   // select only one utxo (tx without change)
   let solution1 = utxos.reduce((solution, utxo) => {
-    let value = utxo.value - feeEstimator([utxo])
-    if (value >= target && value < target + minChange && value < solution[0].value) return [utxo]
+    let value = utxo.value
+    let fee = feeEstimator([utxo])
+    if (value >= target + fee && value < target + fee + minChange && value < solution[0].value) return [utxo]
     return solution
   }, [{ value: Infinity }])
   if (isFinite(solution1[0].value)) return solution1
@@ -49,11 +50,9 @@ export default function utxoSelection (utxos, target, options) {
 
     let {utxos, value} = selected
     let fee = feeEstimator(utxos)
-    if (value < target + fee) return solution
-
     let solutionValue = sumBy(solution, 'value')
     if (value < target + fee + minChange) return value < solutionValue ? utxos : solution // tx without change?
-    return (isFinite(solution[0].value) && solution.length < utxos.length) ? solution : utxos
+    return (isFinite(solution[0].value) && solutionValue < value) ? solution : utxos
   }, [{ value: Infinity }])
   if (isFinite(solution2[0].value)) return solution2
 
